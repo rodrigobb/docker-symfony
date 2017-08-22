@@ -13,6 +13,8 @@ services:
     php:
         build: php7-fpm
         volumes:
+            - ./php7-fpm/custom-php.ini:/usr/local/etc/php/conf.d/custom-php.ini
+#            - ${WWW_PATH}:/var/www
             - ${SYMFONY_APP_PATH}:/var/www/symfony
             - ./logs/symfony:/var/www/symfony/app/logs
     nginx:
