@@ -15,12 +15,12 @@ services:
         volumes:
             - ./php7-fpm/custom-php.ini:/usr/local/etc/php/conf.d/custom-php.ini
 #            - ${WWW_PATH}:/var/www
-            - ${SYMFONY_APP_PATH}:/var/www/symfony
+            - ${SYMFONY_APP_PATH}:/var/www/symfony:cached
             - ./logs/symfony:/var/www/symfony/app/logs
     nginx:
         build: nginx
         ports:
-            - 80:80
+            - 8080:80
         volumes_from:
             - php
         volumes:
