@@ -14,8 +14,8 @@ services:
         build: php53-fpm
         volumes:
             - ./php53-fpm/custom-php.ini:/usr/local/etc/php/conf.d/custom-php.ini
-#            - ${WWW_PATH}:/var/www
-            - ${SYMFONY_APP_PATH}:/var/www/symfony:cached
+            - ${WWW_PATH}:/var/www:cached
+#            - ${SYMFONY_APP_PATH}:/var/www/symfony:cached
             - ./logs/symfony:/var/www/symfony/app/logs
     nginx:
         build: nginx
