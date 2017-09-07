@@ -140,19 +140,24 @@ RUN apt-get update && apt-get install -y \
 
 # Install Composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
-RUN composer --version
 
 # Install Symfony
-RUN curl -LsS https://symfony.com/installer -o /usr/local/bin/symfony
-RUN chmod a+x /usr/local/bin/symfony
+RUN curl -LsS https://symfony.com/installer -o /usr/local/bin/symfony \
+    && chmod a+x /usr/local/bin/symfony
+
+# Install PHPUnit
+RUN cd /tmp && curl -L https://phar.phpunit.de/phpunit-4.8.phar > phpunit.phar \
+    && chmod +x phpunit.phar \
+    && mv /tmp/phpunit.phar /usr/local/bin/phpunit
 
 # Set timezone
-RUN rm /etc/localtime
-RUN ln -s /usr/share/zoneinfo/Europe/Paris /etc/localtime
-RUN "date"
+RUN rm /etc/localtime \
+    && ln -s /usr/share/zoneinfo/Europe/Paris /etc/localtime \
+    && "date"
 
 # Type docker-php-ext-install to see available extensions
-RUN docker-php-ext-install pdo pdo_mysql
+# NO (because pdo is included in PHP 5.1+) RUN docker-php-ext-install pdo pdo_mysql
+RUN docker-php-ext-install pdo_mysql
 
 # TODO: (not supported with PHP5.3)
 #   # install xdebug
