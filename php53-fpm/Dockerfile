@@ -139,6 +139,16 @@ RUN apt-get update && apt-get install -y \
 #    vim \
     unzip
 
+# Install mongo
+RUN apt-get update && apt-get install -y libssl-dev \
+    && pecl install mongo \
+#    && pecl install mbstring \
+#    maybe --enable-mbstring is needed in compilation
+    && echo "extension=mongo.so" >> /usr/local/etc/php/conf.d/docker-php-ext-mongo.ini
+#    && echo "extension=mbstring.so" >> /usr/local/etc/php/conf.d/docker-php-ext-mbstring.ini
+
+    ext-mbstring
+
 # Install Composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
