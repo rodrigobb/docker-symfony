@@ -3,6 +3,7 @@ MAINTAINER https://github.com/helderco/
 
 # persistent / runtime deps
 RUN apt-get update && apt-get install -y --no-install-recommends \
+      apt-utils \
       ca-certificates \
       curl \
       librecode0 \
@@ -28,25 +29,25 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 ENV PHP_INI_DIR /usr/local/etc/php
 RUN mkdir -p $PHP_INI_DIR/conf.d
 
-ENV GPG_KEYS 0B96609E270F565C13292B24C13C70B87267B52D 0A95E9A026542D53835E3F3A7DEC4E69FC9C83D7 0E604491
+ENV GPG_KEYS 6E4F6AB321FDC07F2C332E3AC2BF0BC433CFC8B3 0BD78B5F97500D450838F95DFE857D9A90D90EC1
 RUN set -xe \
   && for key in $GPG_KEYS; do \
     gpg --keyserver ha.pool.sks-keyservers.net --recv-keys "$key"; \
   done
 
 # compile openssl, otherwise --with-openssl won't work
-RUN OPENSSL_VERSION="1.0.2k" \
-      && cd /tmp \
-      && mkdir openssl \
-      && curl -sL "https://www.openssl.org/source/openssl-$OPENSSL_VERSION.tar.gz" -o openssl.tar.gz \
-      && curl -sL "https://www.openssl.org/source/openssl-$OPENSSL_VERSION.tar.gz.asc" -o openssl.tar.gz.asc \
-      && gpg --verify openssl.tar.gz.asc \
-      && tar -xzf openssl.tar.gz -C openssl --strip-components=1 \
-      && cd /tmp/openssl \
-      && ./config && make && make install \
-      && rm -rf /tmp/*
+# RUN OPENSSL_VERSION="1.1.0g" \
+#       && cd /tmp \
+#       && mkdir openssl \
+#       && curl -sL "https://www.openssl.org/source/openssl-$OPENSSL_VERSION.tar.gz" -o openssl.tar.gz \
+#       && curl -sL "https://www.openssl.org/source/openssl-$OPENSSL_VERSION.tar.gz.asc" -o openssl.tar.gz.asc \
+#       && gpg --verify openssl.tar.gz.asc \
+#       && tar -xzf openssl.tar.gz -C openssl --strip-components=1 \
+#       && cd /tmp/openssl \
+#       && ./config && make && make install \
+#       && rm -rf /tmp/*
 
-ENV PHP_VERSION 5.3.29
+ENV PHP_VERSION 5.6.33
 
 # php 5.3 needs older autoconf
 # --enable-mysqlnd is included below because it's harder to compile after the fact the extensions are (since it's a plugin for several extensions, not an extension in itself)
@@ -76,13 +77,15 @@ RUN buildDeps=" \
             --with-fpm-user=www-data \
             --with-fpm-group=www-data \
             --disable-cgi \
-            --enable-mysqlnd \
+#            --enable-mysqlnd \
+            --with-pdo-mysql \
             --with-mysql \
             --with-curl \
-            --with-openssl=/usr/local/ssl \
+            --with-openssl \
             --with-readline \
             --with-recode \
             --with-zlib \
+            --enable-mbstring \
             --enable-debug \
       && make -j"$(nproc)" \
       && make install \
@@ -158,7 +161,7 @@ RUN rm /etc/localtime \
 
 # Type docker-php-ext-install to see available extensions
 # NO (because pdo is included in PHP 5.1+) RUN docker-php-ext-install pdo pdo_mysql
-RUN docker-php-ext-install pdo_mysql
+# NO (because pdo_mysql is included in PHP 5.6+) RUN docker-php-ext-install pdo_mysql
 
 # Install xdebug
 RUN pecl install xdebug-2.2.7 \

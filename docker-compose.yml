@@ -5,15 +5,16 @@ services:
         image: mysql
         volumes:
             - "./.data/db:/var/lib/mysql"
+            - "${WWW_PATH}/opt:/opt:cached"
         environment:
             MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
             MYSQL_DATABASE: ${MYSQL_DATABASE}
             MYSQL_USER: ${MYSQL_USER}
             MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     php:
-        build: php53-fpm
+        build: php56-fpm
         volumes:
-            - ./php53-fpm/custom-php.ini:/usr/local/etc/php/conf.d/custom-php.ini
+            - ./php56-fpm/custom-php.ini:/usr/local/etc/php/conf.d/custom-php.ini
             - ${WWW_PATH}:/var/www:cached
 #            - ${SYMFONY_APP_PATH}:/var/www/symfony:cached
             - ./logs/symfony:/var/www/symfony/app/logs
